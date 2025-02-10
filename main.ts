@@ -1,4 +1,7 @@
 function Switch (BlueOrRed: boolean) {
+    timer.background(function () {
+        spawnParticles(mySprite, 0, 15)
+    })
     if (BlueOrRed) {
         mySprite.setImage(img`
             . . . . . . 8 8 8 8 . . . . . . 
@@ -41,7 +44,7 @@ function Switch (BlueOrRed: boolean) {
         Color = true
     }
 }
-scene.onOverlapTile(SpriteKind.Player, assets.tile`myTile6`, function (sprite, location) {
+scene.onOverlapTile(SpriteKind.Player, assets.tile`myTile22`, function (sprite, location) {
     if (!(Color)) {
         tiles.placeOnTile(sprite, tiles.getTileLocation(spawnpointX, spawnpointY))
     }
@@ -54,11 +57,20 @@ function endLevel (changeToLevelNum: number) {
         currentLevel = 1
         tiles.placeOnTile(mySprite, tiles.getTileLocation(spawnpointX, spawnpointY))
     } else if (changeToLevelNum == 2) {
-        tiles.setCurrentTilemap(tilemap`level2`)
+        tiles.setCurrentTilemap(tilemap`level0`)
         spawnpointX = 0
         spawnpointY = 27
         currentLevel = 2
         tiles.placeOnTile(mySprite, tiles.getTileLocation(spawnpointX, spawnpointY))
+    } else if (changeToLevelNum == 3) {
+        tiles.setCurrentTilemap(tilemap`level9`)
+        spawnpointX = 0
+        spawnpointY = 27
+        currentLevel = 3
+        tiles.placeOnTile(mySprite, tiles.getTileLocation(spawnpointX, spawnpointY))
+    }
+    for (let value of sprites.allOfKind(SpriteKind.Enemy)) {
+        sprites.destroy(value)
     }
     for (let value of tiles.getTilesByType(assets.tile`myTile18`)) {
         spike = sprites.create(img`
@@ -66,21 +78,22 @@ function endLevel (changeToLevelNum: number) {
             . . . . . . . . . . . . . . . . 
             . . . . . . . . 1 . . . . . . . 
             . . . . . . . 1 9 1 . . . . . . 
+            . . . . . . . 1 9 1 . . . . . . 
             . . . . . . . 1 7 1 . . . . . . 
-            . . . . . . . 1 7 1 . . . . . . 
-            . . . . . . 1 7 7 7 1 . . . . . 
+            . . . . . . 1 9 7 7 1 . . . . . 
             . . . . . 1 9 7 7 7 7 1 . . . . 
             . . . . . 1 9 7 7 7 7 1 . . . . 
             . . . . 1 9 9 7 7 7 7 7 1 . . . 
-            . . . . 1 7 7 7 7 7 7 7 1 . . . 
+            . . . . 1 9 7 7 7 7 7 7 1 . . . 
             . . . 1 9 7 7 7 7 7 7 7 6 1 . . 
             . . . 1 9 7 7 7 7 7 7 7 6 1 . . 
             . . 1 9 9 7 7 7 7 7 7 7 6 6 1 . 
             . . 1 7 7 7 7 7 7 7 7 7 7 6 1 . 
             . . 1 6 6 6 6 6 8 6 6 6 6 8 1 . 
-            `, SpriteKind.Player)
+            `, SpriteKind.Enemy)
         tiles.placeOnTile(spike, value)
     }
+    setColoredBlockCollision()
     Switch(false)
     setColoredBlockCollision()
 }
@@ -117,9 +130,37 @@ function setColoredBlockCollision () {
         }
     }
 }
+function spawnParticles (origin: Sprite, colorRangeMin: number, colorRangeMax: number) {
+    let list = 0
+    if (sprites.allOfKind(list).length > 100) {
+        for (let index = 0; index < 100; index++) {
+            sprites.destroy(sprites.allOfKind(list)._pickRandom())
+        }
+    } else {
+        for (let index = 0; index < 10; index++) {
+            projectile = sprites.createProjectileFromSprite(img`
+                f 
+                `, origin, randint(-75, 75), randint(-75, 75))
+            projectile.image.fill(randint(colorRangeMin, colorRangeMax))
+        }
+    }
+    while (sprites.allOfKind(list).length > 0) {
+        pause(100)
+        sprites.destroy(sprites.allOfKind(list)._pickRandom())
+    }
+}
+sprites.onOverlap(SpriteKind.Player, SpriteKind.Enemy, function (sprite, otherSprite) {
+    tiles.placeOnTile(sprite, tiles.getTileLocation(spawnpointX, spawnpointY))
+    if (Color) {
+        spawnParticles(otherSprite, 2, 5)
+    } else {
+        spawnParticles(otherSprite, 6, 9)
+    }
+})
 let vx = 0
 let spike: Sprite = null
 let currentLevel = 0
+let projectile: Sprite = null
 let mySprite: Sprite = null
 let Color = false
 let spawnpointY = 0
@@ -131,11 +172,34 @@ spawnpointY = 12
 Color = true
 mySprite = sprites.create(assets.image`mainPlayer`, SpriteKind.Player)
 mySprite.ay = 300
+let camera = sprites.create(img`
+    . . . 1 1 1 1 1 1 1 1 1 . . . . 
+    . . 1 1 9 9 9 9 9 9 9 1 1 . . . 
+    . 1 1 9 9 9 9 9 9 9 9 9 1 1 . . 
+    1 1 9 9 9 9 9 9 9 9 9 9 9 1 1 . 
+    1 9 9 9 9 9 9 9 9 9 9 9 9 9 1 . 
+    1 9 9 9 9 9 9 9 9 9 9 9 9 9 1 . 
+    1 9 9 9 9 9 9 9 9 9 9 9 9 9 1 . 
+    1 9 9 9 9 9 9 9 9 9 9 9 9 9 1 . 
+    1 9 9 9 9 9 9 9 9 9 9 9 9 9 1 . 
+    1 9 9 9 9 9 9 9 9 9 9 9 9 9 1 . 
+    1 9 9 9 9 9 9 9 9 9 9 9 9 9 1 . 
+    1 1 9 9 9 9 9 9 9 9 9 9 9 1 1 . 
+    . 1 1 9 9 9 9 9 9 9 9 9 1 1 . . 
+    . . 1 1 9 9 9 9 9 9 9 1 1 . . . 
+    . . . 1 1 1 1 1 1 1 1 1 . . . . 
+    . . . . . . . . . . . . . . . . 
+    `, SpriteKind.Food)
+tiles.placeOnTile(camera, tiles.getTileLocation(4, 12))
 scene.cameraFollowSprite(mySprite)
 endLevel(1)
 for (let value of tiles.getTilesByType(assets.tile`myTile2`)) {
     tiles.setWallAt(value, true)
 }
+projectile = sprites.createProjectileFromSprite(img`
+    f 
+    `, mySprite, randint(-75, 75), randint(-75, 75))
+projectile.setFlag(SpriteFlag.AutoDestroy, true)
 forever(function () {
     if (controller.left.isPressed()) {
         vx += -0.2
@@ -155,6 +219,15 @@ forever(function () {
 })
 forever(function () {
 	
+})
+game.onUpdateInterval(100, function () {
+    camera.x = camera.x + 0.8 * (camera.x - mySprite.x)
+    camera.y = camera.y + 0.8 * (camera.y - mySprite.y)
+})
+game.onUpdateInterval(100, function () {
+    for (let value of sprites.allOfKind(SpriteKind.Projectile)) {
+        value.vy += 25
+    }
 })
 game.onUpdateInterval(200, function () {
     if (controller.left.isPressed()) {
