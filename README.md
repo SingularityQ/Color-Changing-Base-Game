@@ -1,7 +1,7 @@
  
 
 
-> Open this page at [https://singularityq.github.io/trans-boy-591-base-game/](https://singularityq.github.io/trans-boy-591-base-game/)
+> Open this page at [https://github.com/SingularityQ/Color-Changing-Base-Game/](https://github.com/SingularityQ/Color-Changing-Base-Game/)
 
 ## Use as Extension
 
