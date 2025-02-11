@@ -1,3 +1,4 @@
+// Functions with Parameters
 function Switch (BlueOrRed: boolean) {
     timer.background(function () {
         spawnParticles(mySprite, 0, 15)
@@ -44,7 +45,9 @@ function Switch (BlueOrRed: boolean) {
         Color = true
     }
 }
+// Return Values
 function isSpriteMoving () {
+    // Conditional Statements
     if (Math.round(mySprite.vx * 5) == 0 && !(controller.anyButton.isPressed())) {
         return false
     } else {
@@ -156,6 +159,8 @@ function spawnParticles (origin: Sprite, colorRangeMin: number, colorRangeMax: n
             projectile.image.fill(randint(colorRangeMin, colorRangeMax))
         }
     }
+    // While Loops
+    // Arrays
     while (sprites.allOfKind(list).length > 0) {
         pause(100)
         sprites.destroy(sprites.allOfKind(list)._pickRandom())
