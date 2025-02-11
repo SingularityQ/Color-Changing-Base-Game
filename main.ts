@@ -44,52 +44,18 @@ function Switch (BlueOrRed: boolean) {
         Color = true
     }
 }
+function isSpriteMoving () {
+    if (Math.round(mySprite.vx * 5) == 0 && !(controller.anyButton.isPressed())) {
+        return false
+    } else {
+        return true
+    }
+}
 scene.onOverlapTile(SpriteKind.Player, assets.tile`myTile22`, function (sprite, location) {
     if (!(Color)) {
         tiles.placeOnTile(sprite, tiles.getTileLocation(spawnpointX, spawnpointY))
     }
 })
-function isSpriteAnim () {
-    if (mySprite.image != img`
-        . . . . . . 4 4 4 4 . . . . . . 
-        . . . . . 4 . . . . 4 . . . . . 
-        . . . . . 4 4 . . . 4 . . . . . 
-        . . . . . . . 4 4 4 4 . . . . . 
-        . . . . . . 4 4 4 . . . . . . . 
-        . . . . . 4 . 4 . 4 . . . . . . 
-        . . . . 4 . . 4 . . 4 . . . . . 
-        . . . 4 . . . . 4 . 4 . . . . . 
-        . . . 4 . . . . 4 . . 4 . . . . 
-        . . . 4 . . . . 4 . . . . . . . 
-        . . . . . . . . 4 4 . . . . . . 
-        . . . . . . . 4 . . 4 . . . . . 
-        . . . . . . . 4 . . . 4 . . . . 
-        . . . . . . 4 . . . . 4 . . . . 
-        . . . . . . 4 . . . . 4 . . . . 
-        . . . . . . 4 . . . . 4 . . . . 
-        ` || mySprite.image != img`
-        . . . . . . 8 8 8 8 . . . . . . 
-        . . . . . 8 . . . . 8 . . . . . 
-        . . . . . 8 8 . . . 8 . . . . . 
-        . . . . . . . 8 8 8 8 . . . . . 
-        . . . . . . 8 8 8 . . . . . . . 
-        . . . . . 8 . 8 . 8 . . . . . . 
-        . . . . 8 . . 8 . . 8 . . . . . 
-        . . . 8 . . . . 8 . 8 . . . . . 
-        . . . 8 . . . . 8 . . 8 . . . . 
-        . . . 8 . . . . 8 . . . . . . . 
-        . . . . . . . . 8 8 . . . . . . 
-        . . . . . . . 8 . . 8 . . . . . 
-        . . . . . . . 8 . . . 8 . . . . 
-        . . . . . . 8 . . . . 8 . . . . 
-        . . . . . . 8 . . . . 8 . . . . 
-        . . . . . . 8 . . . . 8 . . . . 
-        `) {
-        return true
-    } else {
-        return false
-    }
-}
 function endLevel (changeToLevelNum: number) {
     if (changeToLevelNum == 1) {
         tiles.setCurrentTilemap(tilemap`level`)
@@ -237,7 +203,7 @@ camera = sprites.create(img`
     . . . . . . . . . . . . . . . . 
     . . . . . . . . . . . . . . . . 
     `, SpriteKind.Food)
-scene.cameraFollowSprite(camera)
+scene.cameraFollowSprite(mySprite)
 endLevel(1)
 for (let value of tiles.getTilesByType(assets.tile`myTile2`)) {
     tiles.setWallAt(value, true)
@@ -443,7 +409,7 @@ game.onUpdateInterval(200, function () {
             )
         }
     }
-    if (isSpriteAnim()) {
+    if (!(isSpriteMoving())) {
         if (Color) {
             mySprite.setImage(img`
                 . . . . . . 4 4 4 4 . . . . . . 
